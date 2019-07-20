@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="msapplication-starturl" content="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>ダンボールAI戦車</title>
+<script type="text/javascript">
+var imageNr = 0; // Serial number of current image
+var finished = new Array(); // References to img objects which have finished downloading
+var paused = false;
+
+function createImageLayer() {
+  var img = new Image();
+  img.style.position = "absolute";
+  img.style.zIndex = -1;
+  img.onload = imageOnload;
+  img.onclick = imageOnclick;
+  // img.crossOrigin = "anonymous";
+  img.src = "/image/?action=snapshot&n=" + (++imageNr);
+  var webcam = document.getElementById("webcam");
+  webcam.insertBefore(img, webcam.firstChild);
+}
+
+// Two layers are always present (except at the very beginning), to avoid flicker
+function imageOnload() {
+  this.style.zIndex = imageNr; // Image finished, bring to front!
+  while (1 < finished.length) {
+    var del = finished.shift(); // Delete old image(s) from document
+    del.parentNode.removeChild(del);
+  }
+  this.id = "webcam_img"
+
+  finished.push(this);
+  if (!paused) createImageLayer();
+}
+
+function imageOnclick() { // Clicking on the image will pause the stream
+  paused = !paused;
+  if (!paused) createImageLayer();
+}
+
+</script>
+<script src="/webiopi.js"></script>
+
+<script>
+function init() {
+}
+function stop() {
+    webiopi().callMacro("stop");
+}
+function forward() {
+    webiopi().callMacro("forward");
+}
+function reverse() {
+    webiopi().callMacro("reverse");
+}
+function turnLeft() {
+    webiopi().callMacro("turnLeft");
+}
+function turnRight() {
+    webiopi().callMacro("turnRight");
+}
+webiopi().ready(init);
+</script>
+
+<script src="https://use.fontawesome.com/6497e53239.js"></script>
+</head>
+<body onload="createImageLayer();">
+
+<div>
+<p>
+    <i class="fa fa-fw fa-5x" aria-hidden="true"></i>
+    <i class="fa fa-arrow-circle-o-up fa-fw fa-5x" aria-hidden="true" onmousedown="forward()"></i>
+    <i class="fa fa-fw fa-5x" aria-hidden="true"></i>
+</p>
+<p>
+    <i class="fa fa-arrow-circle-o-left fa-fw fa-5x" aria-hidden="true" onmousedown="turnLeft()"></i>
+    <i class="fa fa-stop-circle-o fa-fw fa-5x" aria-hidden="true" onmousedown="stop()"></i>
+    <i class="fa fa-arrow-circle-o-right fa-fw fa-5x" aria-hidden="true" onmousedown="turnRight()"></i>
+</p>
+<p>
+    <i class="fa fa-fw fa-5x" aria-hidden="true"></i>
+    <i class="fa fa-arrow-circle-o-down fa-fw fa-5x" aria-hidden="true" onmousedown="reverse()"></i>
+    <i class="fa fa-fw fa-5x" aria-hidden="true"></i>
+</p>
+</div>
+<canvas id="canvas"></canvas>
+<div class="slide-in" id="prediction">
+  <div id="text"></div>
+  <div class="rect"></div>
+  <div class="cross"></div>
+</div>
+<div id="webcam"><noscript><img src="/image/?action=snapshot" /></noscript></div>
+<div id="button"></div>
+
+  <script type="text/javascript" src="dist/bundle.js"></script>
+</body>
+</html>
