@@ -45,18 +45,25 @@ RaspbianのデフォルトではSSHが無効化されているため、有効化
 いい感じに接続して、gpioたたけば、すぐモーター制御できるよ。
 GPIOの初期化
 > echo 4 > /sys/class/gpio/export
+
 > echo 17 > /sys/class/gpio/export
+
 > echo 9 > /sys/class/gpio/export
+
 > echo 11 > /sys/class/gpio/export
+
 > echo out > /sys/class/gpio/gpio4/direction
+
 > echo out > /sys/class/gpio/gpio17/direction
+
 > echo out > /sys/class/gpio/gpio9/direction
+
 > echo out > /sys/class/gpio/gpio11/direction
 
 ### モーター回転！
 echo 1 > /sys/class/gpio/gpio4/value
 
-#モーター止まれ！
+### モーター止まれ！
 echo 0 > /sys/class/gpio/gpio4/value
 
 安定化電源で５Vでやってるけど、本番はトルクあげるために単三電池４本の６Vだよ
@@ -65,24 +72,38 @@ echo 0 > /sys/class/gpio/gpio4/value
 http://webiopi.trouch.com/DOWNLOADS.html
 
 > cd ~
+
 > mkdir tank
+
 > cd tank
+
 > wget https://sourceforge.net/projects/webiopi/files/WebIOPi-0.7.1.tar.gz
+
 > tar xvf WebIOPi-0.7.1.tar.gz
 
 ラズパイ３用のパッチあてる。（これないとマジでGPIOを制御できない）
 > cd WebIOPi-0.7.1
+
 > wget https://raw.githubusercontent.com/doublebind/raspi/master/webiopi-pi2bplus.patch
+
 > patch -p1 -i webiopi-pi2bplus.patch
+
 > sudo ./setup.sh
+
 途中でこのメッセージがでるから y 入力
+
 > Do you want to access WebIOPi over Internet ? [y/n]
+
 WebIOPiのサービススクリプトをダウンロードして、サービスを走らせる。
 
 > cd /etc/systemd/system/
+
 > sudo wget https://raw.githubusercontent.com/doublebind/raspi/master/webiopi.service
+
 > sudo systemctl start webiopi
+
 > sudo systemctl enable webiopi
+
 WebからGPIOを制御してみよう。
 http://[ラズパイipアドレス]/
 ログイン ID : webiopi パスワード : raspberry　
@@ -177,13 +198,16 @@ raspi-configでカメラを有効にする。
 > 
 > [Install]
 > WantedBy=multi-user.target
-> 
+
+
 > systemctl enable stream
+
 > systemctl start stream
 
 ・CORSが発生してキャンバス描画ができないのでnginxでリバースプロキシを設定する
 
 > sudo apt-get install -y nginx
+
 > vim.tiny /etc/nginx/sites-enabled/default
 
 
@@ -215,6 +239,7 @@ raspi側
 
 PC側
 > scp bundle.js pi@raspiのIP:/home/pi/tank/www/html/dist/
+
 > scp index.html pi@raspiのIP:/home/pi/tank/www/html/
 
 添付ファイル種類：code
