@@ -114,6 +114,7 @@ webiopiのhtmlルートフォルダの設定をしておこう
 
 > sudo vi /etc/webiopi/config
 
+```
 > [SCRIPTS]
 > # Load custom scripts syntax :
 > # name = sourcefile
@@ -128,6 +129,7 @@ webiopiのhtmlルートフォルダの設定をしておこう
 > # Use welcome-file to change the default "Welcome" file
 > #welcome-file = index.html
 > welcome-file = tank.html
+```
 
 再起動
 > sudo reboot
@@ -153,34 +155,36 @@ raspi-configでカメラを有効にする。
 ・sytemdに登録
 
 /home/pi/tank/notifyip.sh を作成
-> #!/bin/sh
-> 
-> sleep 15
-> _IP=$(hostname -I) || true
-> if [ "$_IP" ]; then
->   printf "My IP address is %s\n" "$_IP"
->   curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"content": "hello from '"$_IP"'"}' > 'https://discordapp.com/api/webhooks/588040369124671546/d-ENUy_43IVypKqUz-UHsI-CNzKJbEdX7YYAKMXm4jRVhXPquUM7It_QBYBoveZp9HZm'
-> fi
-
+'''
+#!/bin/sh
+ 
+sleep 15
+_IP=$(hostname -I) || true
+if [ "$_IP" ]; then
+  printf "My IP address is %s\n" "$_IP"
+  curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"content": "hello from '"$_IP"'"}' > 'https://discordapp.com/api/webhooks/588040369124671546/d-ENUy_43IVypKqUz-UHsI-CNzKJbEdX7YYAKMXm4jRVhXPquUM7It_QBYBoveZp9HZm'
+fi
+'''
 
 > sudo vim.tiny /etc/systemd/system/notifyip.service
 
+'''
+[Unit]
+Description = notify ip
 
-> [Unit]
-> Description = notify ip
-> 
-> [Service]
-> ExecStart=/home/pi/tank/notifyip.sh
-> Restart=no
-> Type=oneshot
-> 
-> [Install]
-> WantedBy=multi-user.target
-> 
+[Service]
+ExecStart=/home/pi/tank/notifyip.sh
+Restart=no
+Type=oneshot
+
+[Install]
+WantedBy=multi-user.target
+```
+
 > systemctl enable notifyip
-> 
-> 
+
 > systemctl enable notifyip
+
 > systemctl start notifyip
 
 起動時にstream開始
@@ -188,17 +192,18 @@ raspi-configでカメラを有効にする。
 
 > sudo vim.tiny  /etc/systemd/system/stream.service
 
-> [Unit]
-> Description = Movie Streaming
-> 
-> [Service]
-> ExecStart=/home/pi/tank/camera/stream.sh
-> Restart=always
-> Type=simple
-> 
-> [Install]
-> WantedBy=multi-user.target
+```
+[Unit]
+Description = Movie Streaming
 
+[Service]
+ExecStart=/home/pi/tank/camera/stream.sh
+Restart=always
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
+```
 
 > systemctl enable stream
 
@@ -212,22 +217,23 @@ raspi-configでカメラを有効にする。
 
 
 以下を追加
->         location /:8000/macros {
->             rewrite /:8000/(.*) /$1  break;
->             proxy_set_header Authorization "Basic d2ViaW9waTpyYXNwYmVycnk=";
->             proxy_pass http://localhost:8000/;
->         }
-> 
->         location / {
->             proxy_set_header Authorization "Basic d2ViaW9waTpyYXNwYmVycnk=";
->             proxy_pass http://localhost:8000/;
->         }
-> 
->         location /image {
->             rewrite /image/(.*) /$1  break;
->             proxy_set_header Authorization "Basic cGk6MXFhenhjdmI=";
->             proxy_pass http://localhost:8080/;
+```
+        location /:8000/macros {
+            rewrite /:8000/(.*) /$1  break;
+            proxy_set_header Authorization "Basic d2ViaW9waTpyYXNwYmVycnk=";
+            proxy_pass http://localhost:8000/;
+        }
 
+        location / {
+            proxy_set_header Authorization "Basic d2ViaW9waTpyYXNwYmVycnk=";
+            proxy_pass http://localhost:8000/;
+        }
+
+        location /image {
+            rewrite /image/(.*) /$1  break;
+            proxy_set_header Authorization "Basic cGk6MXFhenhjdmI=";
+            proxy_pass http://localhost:8080/;
+```
 
 > sudo service nginx restart
 
