@@ -114,22 +114,25 @@ webiopiのhtmlルートフォルダの設定をしておこう
 
 > sudo vi /etc/webiopi/config
 
+
+
 ```
-> [SCRIPTS]
-> # Load custom scripts syntax :
-> # name = sourcefile
-> #   each sourcefile may have setup, loop and destroy functions and macros
-> #myscript = /home/pi/webiopi/examples/scripts/macros/script.py
-> myscript = /home/pi/tank/www/python/tank.py
-> 
-> # Use doc-root to change default HTML and resource files location
-> #doc-root = /home/pi/webiopi/examples/scripts/macros
-> doc-root = /home/pi/tank/www/html
-> 
-> # Use welcome-file to change the default "Welcome" file
-> #welcome-file = index.html
-> welcome-file = tank.html
+[SCRIPTS]
+# Load custom scripts syntax :
+# name = sourcefile
+#   each sourcefile may have setup, loop and destroy functions and macros
+#myscript = /home/pi/webiopi/examples/scripts/macros/script.py
+myscript = /home/pi/tank/www/python/tank.py
+
+# Use doc-root to change default HTML and resource files location
+#doc-root = /home/pi/webiopi/examples/scripts/macros
+doc-root = /home/pi/tank/www/html
+
+# Use welcome-file to change the default "Welcome" file
+#welcome-file = index.html
+welcome-file = tank.html
 ```
+
 
 再起動
 > sudo reboot
@@ -155,7 +158,8 @@ raspi-configでカメラを有効にする。
 ・sytemdに登録
 
 /home/pi/tank/notifyip.sh を作成
-'''
+
+```
 #!/bin/sh
  
 sleep 15
@@ -164,11 +168,12 @@ if [ "$_IP" ]; then
   printf "My IP address is %s\n" "$_IP"
   curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"content": "hello from '"$_IP"'"}' > 'https://discordapp.com/api/webhooks/588040369124671546/d-ENUy_43IVypKqUz-UHsI-CNzKJbEdX7YYAKMXm4jRVhXPquUM7It_QBYBoveZp9HZm'
 fi
-'''
+```
+
 
 > sudo vim.tiny /etc/systemd/system/notifyip.service
 
-'''
+```
 [Unit]
 Description = notify ip
 
