@@ -2,104 +2,141 @@
 <html lang="ja">
 
 <head>
-  <link rel="manifest" href="manifest.json">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="msapplication-starturl" content="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>ダンボールAI戦車</title>
-<script type="text/javascript">
-var imageNr = 0; // Serial number of current image
-var finished = new Array(); // References to img objects which have finished downloading
-var paused = false;
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="msapplication-starturl" content="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ダンボールAI戦車</title>
+    <script src="/webiopi.js"></script>
+    <link rel="stylesheet" href="./dist/bootstrap.css">
+    <link rel="stylesheet" href="./dist/layout.css">
+    <script src="https://kit.fontawesome.com/18956ba71f.js"></script>
+    <script type="text/javascript">
+        var imageNr = 0; // Serial number of current image
+        var finished = new Array(); // References to img objects which have finished downloading
+        var paused = false;
 
-function createImageLayer() {
-  var img = new Image();
-  img.style.position = "absolute";
-  img.style.zIndex = -1;
-  img.onload = imageOnload;
-  img.onclick = imageOnclick;
-  // img.crossOrigin = "anonymous";
-  img.src = "/image/?action=snapshot&n=" + (++imageNr);
-  var webcam = document.getElementById("webcam");
-  webcam.insertBefore(img, webcam.firstChild);
-}
+        function createImageLayer() {
+            var img = new Image();
+            img.style.position = "absolute";
+            img.style.zIndex = -1;
+            img.onload = imageOnload;
+            img.onclick = imageOnclick;
+            // img.crossOrigin = "anonymous";
+            img.src = "/image/?action=snapshot&n=" + (++imageNr);
+            var webcam = document.getElementById("webcam");
+            webcam.insertBefore(img, webcam.firstChild);
+        }
 
-// Two layers are always present (except at the very beginning), to avoid flicker
-function imageOnload() {
-  this.style.zIndex = imageNr; // Image finished, bring to front!
-  while (1 < finished.length) {
-    var del = finished.shift(); // Delete old image(s) from document
-    del.parentNode.removeChild(del);
-  }
-  this.id = "webcam_img"
+        // Two layers are always present (except at the very beginning), to avoid flicker
+        function imageOnload() {
+            this.style.zIndex = imageNr; // Image finished, bring to front!
+            while (1 < finished.length) {
+                var del = finished.shift(); // Delete old image(s) from document
+                del.parentNode.removeChild(del);
+            }
+            this.id = "webcam_img"
 
-  finished.push(this);
-  if (!paused) createImageLayer();
-}
+            finished.push(this);
+            if (!paused) createImageLayer();
+        }
 
-function imageOnclick() { // Clicking on the image will pause the stream
-  paused = !paused;
-  if (!paused) createImageLayer();
-}
+        function imageOnclick() { // Clicking on the image will pause the stream
+            paused = !paused;
+            if (!paused) createImageLayer();
+        }
+    </script>
 
-</script>
-<script src="/webiopi.js"></script>
+    <script>
+        function init() {}
 
-<script>
-function init() {
-}
-function stop() {
-    webiopi().callMacro("stop");
-}
-function forward() {
-    webiopi().callMacro("forward");
-}
-function reverse() {
-    webiopi().callMacro("reverse");
-}
-function turnLeft() {
-    webiopi().callMacro("turnLeft");
-}
-function turnRight() {
-    webiopi().callMacro("turnRight");
-}
-webiopi().ready(init);
-</script>
+        function stop() {
+            webiopi().callMacro("stop");
+        }
 
-<script src="https://use.fontawesome.com/6497e53239.js"></script>
+        function forward() {
+            webiopi().callMacro("forward");
+        }
+
+        function reverse() {
+            webiopi().callMacro("reverse");
+        }
+
+        function turnLeft() {
+            webiopi().callMacro("turnLeft");
+        }
+
+        function turnRight() {
+            webiopi().callMacro("turnRight");
+        }
+
+        function keyevent(keycode) {
+            console.log(keycode)
+            switch (keycode) {
+                case 37:
+                    webiopi().callMacro("forward");
+                    break;
+                case 38:
+                    webiopi().callMacro("reverse");
+                    break;
+                case 39:
+                    webiopi().callMacro("turnLeft");
+                    break;
+                case 40:
+                    webiopi().callMacro("turnRight");
+                    break;
+                default:
+                    break;
+            }
+
+        }
+        webiopi().ready(init);
+    </script>
+
+    <script src="https://use.fontawesome.com/6497e53239.js"></script>
 </head>
+
 <body onload="createImageLayer();">
+    <div class="controller">
+        <div class="fixed-top p-3">
+            <div class="btn bg-light" onclick="window.location.reload();">
+                <i class="fas fa-sync fa-fw fa-lg"></i>
+            </div>
+        </div>
+        <div class="fixed-bottom">
+            <div class="d-flex justify-content-center align-items-center">
+                <div class=""></div>
+                <div class="btn btn-secondary py-3 m-2" onmousedown="turnLeft()" onmouseup="stop()" ontouchstart="turnLeft()" ontouchend="stop()">
+                    <i class="fa fa-arrow-circle-o-left fa-fw fa-2x"></i>
+                </div>
+                <div class="mx-2">
+                    <div class="btn btn-secondary btn-block px-3 my-2" onmousedown="forward()" onmouseup="stop()" ontouchstart="forward()" ontouchend="stop()">
+                        <i class="fa fa-arrow-circle-o-up fa-fw fa-2x"></i>
+                    </div>
+                    <div class="btn btn-secondary btn-block px-3 my-2" onmousedown="reverse()" onmouseup="stop()" ontouchstart="reverse()" ontouchend="stop()">
+                        <i class="fa fa-arrow-circle-o-down fa-fw fa-2x"></i>
+                    </div>
+                </div>
+                <div class="btn btn-secondary py-3 m-2" onmousedown="turnRight()" onmouseup="stop()" ontouchstart="turnRight()" ontouchend="stop()">
+                    <i class="fa fa-arrow-circle-o-right fa-fw fa-2x"></i>
+                </div>
+                <div id="button" class="btn btn-success py-3 m-2"><i class="fas fa-bullseye fa-fw fa-2x"></i> Shot!!</div>
+            </div>
+        </div>
+    </div>
+    <canvas id="canvas"></canvas>
+    <div class="slide-in" id="prediction">
+        <div id="text"></div>
+        <div class="rect"></div>
+        <div class="cross"></div>
+    </div>
+    <div id="webcam"><noscript><img src="/image/?action=snapshot" /></noscript></div>
 
-<div>
-<p>
-    <i class="fa fa-fw fa-5x" aria-hidden="true"></i>
-    <i class="fa fa-arrow-circle-o-up fa-fw fa-5x" aria-hidden="true" onmousedown="forward()"></i>
-    <i class="fa fa-fw fa-5x" aria-hidden="true"></i>
-</p>
-<p>
-    <i class="fa fa-arrow-circle-o-left fa-fw fa-5x" aria-hidden="true" onmousedown="turnLeft()"></i>
-    <i class="fa fa-stop-circle-o fa-fw fa-5x" aria-hidden="true" onmousedown="stop()"></i>
-    <i class="fa fa-arrow-circle-o-right fa-fw fa-5x" aria-hidden="true" onmousedown="turnRight()"></i>
-</p>
-<p>
-    <i class="fa fa-fw fa-5x" aria-hidden="true"></i>
-    <i class="fa fa-arrow-circle-o-down fa-fw fa-5x" aria-hidden="true" onmousedown="reverse()"></i>
-    <i class="fa fa-fw fa-5x" aria-hidden="true"></i>
-</p>
-</div>
-<canvas id="canvas"></canvas>
-<div class="slide-in" id="prediction">
-  <div id="text"></div>
-  <div class="rect"></div>
-  <div class="cross"></div>
-</div>
-<div id="webcam"><noscript><img src="/image/?action=snapshot" /></noscript></div>
-<div id="button"></div>
-
-  <script type="text/javascript" src="dist/bundle.js"></script>
+    <script type="text/javascript" src="dist/bundle.js"></script>
 </body>
+
 </html>

@@ -1,0 +1,9 @@
+{
+  "name": "ダンボールAI戦車",
+  "short_name": "ダンボールAI戦車",
+  "theme_color": "#2196f3",
+  "background_color": "#2196f3",
+  "display": "fullscreen",
+  "scope": "/",
+  "start_url": "/"
+}
